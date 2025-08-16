@@ -1,25 +1,23 @@
-DROP PROCEDURE IF EXISTS ListAllSubscribers;
+drop procedure if exists ListAllSubscribers;
+delimiter // 
 
-DELIMITER //
-CREATE PROCEDURE ListAllSubscribers()
-BEGIN
-	-- variables
-	DECLARE subscriberNameFetched VARCHAR(100);
-    DECLARE finishedSearching BOOL DEFAULT FALSE;
-    -- cursor
-	DECLARE cur CURSOR FOR SELECT SubscriberName FROM Subscribers;
-    -- handler
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET finishedSearching = TRUE;
+create procedure ListAllSubscribers() 
+begin 
+	declare subName varchar(100);
+    declare done bool default false;
+    declare cur cursor for select SubscriberName from subscribers;
+    declare continue handler for not found set done = true;
+    
+    open cur;
+		theLoop: loop 
+			fetch cur into subName;
+			if done then leave theLoop;
+            else select concat(subName) as SubscriberName;
+            end if;
+		end loop;
+    close cur;
+end //
 
-    OPEN cur;
-		theLoop: LOOP
-			FETCH cur INTO subscriberNameFetched;
-				IF 
-				finishedSearching THEN LEAVE theLoop; -- if nothing fetched then it will leave the loop
-				END IF;
-			SELECT CONCAT (subscriberNameFetched) AS SubscriberName;
-		END LOOP;
-    CLOSE cur;
-END //
+delimiter ;
 
-DELIMITER ;
+-- call ListAllSubscribers();
