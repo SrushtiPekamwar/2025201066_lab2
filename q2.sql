@@ -1,18 +1,14 @@
-DROP PROCEDURE IF EXISTS GetWatchHistoryBySubscriber;
+drop procedure if exists GetWatchHistoryBySubscriber;
+delimiter // 
 
-DELIMITER //
-CREATE PROCEDURE GetWatchHistoryBySubscriber(IN sub_id INT)
-	BEGIN
-	    -- Only if the subscriber has watched any shows then it will display the watch history
-		IF EXISTS (SELECT 1 FROM WatchHistory WHERE SubscriberID = sub_id) THEN
-			SELECT subs.SubscriberName, sh.Title AS ShowName, w.WatchTime AS MinutesWatched 
-			FROM WatchHistory w
-			INNER JOIN Subscribers subs ON w.SubscriberID = subs.SubscriberID
-			INNER JOIN Shows sh ON w.ShowID = sh.ShowID
-			WHERE w.SubscriberID = sub_id;
-		ELSE
-            SELECT CONCAT('Subscriber did not watch any shows yet') AS message;
-		END IF;
-	END //
-    
-DELIMITER ;
+create procedure GetWatchHistoryBySubscriber(in sub_id int) 
+begin 
+	select sub.subscriberName, sh.title, w.watchtime 
+    from watchhistory as w 
+    inner join subscribers sub on w.subscriberid = sub.subscriberid
+    inner join shows sh on w.showid = sh.showid
+    where w.subscriberid = sub_id;
+end //
+
+delimiter ;
+-- call GetWatchHistoryBySubscriber(23); 
