@@ -1,24 +1,25 @@
-DROP PROCEDURE IF EXISTS SendWatchTimeReport;
+drop procedure if exists SendWatchTimeReport;
+delimiter // 
 
-DELIMITER //
-CREATE PROCEDURE SendWatchTimeReport()
-BEGIN
-	-- variables
-    DECLARE finishedSearching BOOL DEFAULT FALSE;
-    DECLARE sub_id INT;
-    -- cursor, we will select the subscriber ids from WatchHistory table, because it will contain all the ids who have watched any shows
-    DECLARE cur CURSOR FOR SELECT DISTINCT SubscriberID FROM WatchHistory;
-    -- handler
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET finishedSearching = TRUE;
+create procedure SendWatchTimeReport() 
+begin
+	declare done bool default false;
+    declare subid int;
+	declare cur cursor for select distinct subscriberid from watchhistory;
+    declare continue handler for not found set done = true;
+    
+    open cur;
+	theLoop: loop
+		fetch cur into subid;
+        if done then leave theLoop;
+        else 
+        call GetWatchHistoryBySubscriber(subid);
+        end if;
+	end loop;
+    
+    close cur;
+    
+end //
 
-    OPEN cur;
-	theLoop: LOOP
-		FETCH cur INTO sub_id;
-		IF finishedSearching THEN LEAVE theLoop;
-		END IF;
-		CALL GetWatchHistoryBySubscriber(sub_id);
-	END LOOP;
-    CLOSE cur;
-END //
-
-DELIMITER ;
+delimiter ;
+-- call SendWatchTimeReport(); 
