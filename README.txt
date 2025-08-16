@@ -29,7 +29,7 @@ USE StreamingService;
 -----------------------------------------------------------------------------------------------
 # Create required tables
 CREATE TABLE Subscribers (
-    SubscriberID INT PRIMARY KEY AUTO_INCREMENT,
+    SubscriberID INT PRIMARY KEY,
     SubscriberName VARCHAR(100),
     SubscriptionDate DATE
 );
@@ -42,13 +42,12 @@ CREATE TABLE Shows (
 );
 
 CREATE TABLE WatchHistory (
-    HistoryID INT PRIMARY KEY AUTO_INCREMENT,
+    HistoryID INT PRIMARY KEY,
     ShowID INT,
     SubscriberID INT,
     WatchTime INT,
     FOREIGN KEY (ShowID) REFERENCES Shows(ShowID),
-    FOREIGN KEY (SubscriberID) REFERENCES
-    Subscribers(SubscriberID)
+    FOREIGN KEY (SubscriberID) REFERENCES Subscribers(SubscriberID)
 );
 -----------------------------------------------------------------------------------------------
 
