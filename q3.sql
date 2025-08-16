@@ -1,20 +1,24 @@
-DROP PROCEDURE IF EXISTS AddSubscriberIfNotExists;
+drop procedure if exists AddSubscriberIfNotExists;
+delimiter // 
 
-DELIMITER //
-CREATE PROCEDURE AddSubscriberIfNotExists(IN subName VARCHAR(100))
-BEGIN
-    DECLARE alreadyExists INT;
-    -- First check whether the subscriber with the same name already exists in the table
-    SELECT COUNT(*) INTO alreadyExists FROM Subscribers WHERE SubscriberName=subName;
+create procedure AddSubscriberIfNotExists(in subName varchar(100)) 
+begin 
+	declare alreadyExists int;
+    declare subid int;
+    declare subdate date;
     
-    -- If it does not exist, then add it to the subscirbers table
-    IF alreadyExists=0 THEN
-        INSERT INTO Subscribers(SubscriberName) VALUES (subName);
-        SELECT CONCAT('Subscriber named ',subName,' added successfully') AS message;
-    ELSE
-        SELECT CONCAT('Subscriber named ',subName,' already exists') AS message;
-    END IF;
-END //
+    select count(*) into alreadyExists from subscribers where subName = subscribername;
+    
+    if alreadyExists=1 then select concat(subname, " already exists") as message;
+    else 
+		select max(subscriberid)+1 into subid from subscribers;
+		select curdate() into subdate;
+		insert into subscribers(subscriberid,subscribername,subscriptiondate) values (subid,subName,subdate);
+		select concat(subname, " inserted successfully") as message;
+    end if;
+end //
 
-DELIMITER ;
+delimiter ;
 
+-- call AddSubscriberIfNotExists("sru");
+-- select * from subscribers;
